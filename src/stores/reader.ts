@@ -16,11 +16,12 @@ export const useReaderStore = defineStore('reader', () => {
     const p = await api.getProgress(id)
     const idx = p?.chapter_idx ?? 0
     scrollRatio.value = p?.scroll_ratio ?? 0
-    await loadChapter(idx)
+    await loadChapter(idx, scrollRatio.value)
   }
 
-  async function loadChapter(idx: number) {
+  async function loadChapter(idx: number, ratio = scrollRatio.value) {
     if (bookId.value == null) return
+    scrollRatio.value = ratio
     current.value = await api.getChapter(bookId.value, idx)
   }
 

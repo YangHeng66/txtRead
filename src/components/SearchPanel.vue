@@ -57,7 +57,7 @@ async function onOpen(h: SearchHit) {
   await router.push(`/reader/${h.book_id}`)
   queueMicrotask(async () => {
     await reader.openBook(h.book_id)
-    await reader.loadChapter(h.chapter_idx)
+    await reader.loadChapter(h.chapter_idx, 0)
     await reader.saveProgress(0)
   })
 }

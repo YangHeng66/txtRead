@@ -26,7 +26,7 @@ pub fn parse(path: &Path) -> AppResult<ParsedBook> {
     let mut chapters: Vec<ParsedChapter> = Vec::with_capacity(spine_len);
 
     for i in 0..spine_len {
-        if !doc.set_current_page(i) {
+        if !doc.set_current_chapter(i) {
             continue;
         }
         let idref = doc.spine[i].idref.clone();
@@ -36,7 +36,9 @@ pub fn parse(path: &Path) -> AppResult<ParsedBook> {
             .map(|r| normalize_path(&r.path.to_string_lossy()))
             .unwrap_or_default();
 
-        let Some((html, _mime)) = doc.get_current_str() else { continue };
+        let Some((html, _mime)) = doc.get_current_str() else {
+            continue;
+        };
         let text = html_to_text(&html);
         if text.trim().is_empty() {
             continue;
@@ -47,7 +49,10 @@ pub fn parse(path: &Path) -> AppResult<ParsedBook> {
             .cloned()
             .unwrap_or_else(|| format!("Chapter {}", chapters.len() + 1));
 
-        chapters.push(ParsedChapter { title, content: text });
+        chapters.push(ParsedChapter {
+            title,
+            content: text,
+        });
     }
 
     if chapters.is_empty() {

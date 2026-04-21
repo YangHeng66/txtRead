@@ -37,7 +37,7 @@ watch(() => route.params.id, boot)
 onBeforeUnmount(() => store.close())
 
 async function onSelect(idx: number) {
-  await store.loadChapter(idx)
+  await store.loadChapter(idx, 0)
   await store.saveProgress(0)
 }
 
@@ -49,7 +49,7 @@ async function onNextChapter() {
   if (!store.current) return
   const nextIdx = store.current.idx + 1
   if (!store.chapters.some(c => c.idx === nextIdx)) return
-  await store.loadChapter(nextIdx)
+  await store.loadChapter(nextIdx, 0)
   await store.saveProgress(0)
 }
 </script>
