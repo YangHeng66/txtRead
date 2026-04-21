@@ -11,6 +11,7 @@
       :chapter="store.current"
       :initial-ratio="store.scrollRatio"
       @scroll-change="onScroll"
+      @next-chapter="onNextChapter"
     />
   </div>
 </template>
@@ -42,6 +43,14 @@ async function onSelect(idx: number) {
 
 async function onScroll(ratio: number) {
   await store.saveProgress(ratio)
+}
+
+async function onNextChapter() {
+  if (!store.current) return
+  const nextIdx = store.current.idx + 1
+  if (!store.chapters.some(c => c.idx === nextIdx)) return
+  await store.loadChapter(nextIdx)
+  await store.saveProgress(0)
 }
 </script>
 

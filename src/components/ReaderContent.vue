@@ -1,8 +1,9 @@
 <template>
-  <div ref="scroller" class="scroller" @scroll="onScroll">
+  <div ref="scroller" class="scroller" @scroll="onScroll" @wheel="onWheel">
     <article v-if="chapter" class="article">
       <h1 class="h">{{ chapter.title }}</h1>
       <p v-for="(para, i) in paragraphs" :key="i" class="p">{{ para }}</p>
+      <div class="end-hint">—— 继续滚动进入下一章 ——</div>
     </article>
     <div v-else class="empty">（未选中章节）</div>
   </div>
@@ -13,7 +14,10 @@ import { computed, ref, watch, nextTick } from 'vue'
 import type { Chapter } from '../api/tauri'
 
 const props = defineProps<{ chapter: Chapter | null; initialRatio: number }>()
-const emit = defineEmits<{ 'scroll-change': [ratio: number] }>()
+const emit = defineEmits<{
+  'scroll-change': [ratio: number]
+  'next-chapter': []
+}>()
 
 const scroller = ref<HTMLDivElement | null>(null)
 const paragraphs = computed(() =>
@@ -32,6 +36,19 @@ function onScroll(e: Event) {
   }
 }
 
+let lastNext = 0
+function onWheel(e: WheelEvent) {
+  if (e.deltaY <= 0) return
+  const el = scroller.value
+  if (!el) return
+  const max = el.scrollHeight - el.clientHeight
+  if (el.scrollTop < max - 2) return
+  const now = Date.now()
+  if (now - lastNext < 800) return
+  lastNext = now
+  emit('next-chapter')
+}
+
 watch(() => props.chapter?.idx, async () => {
   await nextTick()
   if (!scroller.value) return
@@ -45,5 +62,6 @@ watch(() => props.chapter?.idx, async () => {
 .article { max-width: 720px; margin: 0 auto; }
 .h { font-size: 24px; margin: 0 0 24px; }
 .p { font-size: var(--reader-font-size, 18px); line-height: 1.9; text-indent: 2em; margin: 0 0 14px; }
+.end-hint { text-align: center; color: var(--muted); font-size: 13px; margin: 40px 0 16px; opacity: 0.7; }
 .empty { color: var(--muted); text-align: center; padding-top: 80px; }
 </style>
