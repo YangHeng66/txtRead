@@ -1,9 +1,22 @@
+mod db;
+mod error;
+mod models;
+
+use tauri::Manager;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .setup(|_app| Ok(()))
+        .setup(|app| {
+            let dir = app.path().app_data_dir().expect("app data dir");
+            std::fs::create_dir_all(&dir).ok();
+            let db = db::Db::open(&dir.join("library.sqlite"))
+                .expect("db init");
+            app.manage(db);
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
