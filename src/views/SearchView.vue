@@ -1,1 +1,4 @@
-<template><div style="padding:16px">搜索（Task 13 实现）</div></template>
+<template><SearchPanel /></template>
+<script setup lang="ts">
+import SearchPanel from '../components/SearchPanel.vue'
+</script>
