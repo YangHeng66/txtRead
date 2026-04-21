@@ -1,9 +1,11 @@
 <template>
-  <div class="reader">
+  <div class="reader" :class="{ collapsed: tocCollapsed }">
     <ChapterList
       :chapters="store.chapters"
       :current-idx="store.currentIdx"
+      :collapsed="tocCollapsed"
       @select="onSelect"
+      @toggle="tocCollapsed = !tocCollapsed"
     />
     <ReaderContent
       :chapter="store.current"
@@ -14,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ChapterList from '../components/ChapterList.vue'
 import ReaderContent from '../components/ReaderContent.vue'
@@ -22,6 +24,7 @@ import { useReaderStore } from '../stores/reader'
 
 const route = useRoute()
 const store = useReaderStore()
+const tocCollapsed = ref(false)
 
 async function boot() {
   const id = Number(route.params.id)
@@ -43,5 +46,12 @@ async function onScroll(ratio: number) {
 </script>
 
 <style scoped>
-.reader { display: grid; grid-template-columns: 260px 1fr; height: 100%; }
+.reader {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  height: 100%;
+  min-height: 0;
+  transition: grid-template-columns 0.2s ease;
+}
+.reader.collapsed { grid-template-columns: 36px 1fr; }
 </style>

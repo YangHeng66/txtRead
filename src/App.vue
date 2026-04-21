@@ -48,5 +48,5 @@ onMounted(() => settings.load())
 .navbar { display: flex; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--border); align-items: center; }
 .navbar a { color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 4px; }
 .navbar a.router-link-active { background: var(--accent); color: #fff; }
-.main { flex: 1; overflow: hidden; }
+.main { flex: 1; min-height: 0; overflow: hidden; }
 </style>
